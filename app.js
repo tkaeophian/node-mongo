@@ -25,11 +25,16 @@ connectToDb((error) => {
 // routes
 app.get('/books', (req, res) => {
 
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 5 // page size
+    const page = req.query.page ? parseInt(req.query.page) : 0 // page
+
     let books = [];
 
     db.collection('books')
         .find()
         .sort({author: 1})
+        .skip(page * pageSize)
+        .limit(pageSize)
         .forEach(book => books.push(book))
         .then(() => {
             res.status(200).json(books)
